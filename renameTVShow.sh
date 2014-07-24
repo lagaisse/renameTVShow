@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-# This script rename, move and index TV show files on Synology NAS
+# This script renames, moves and indexes TV show files on Synology NAS
 #  Must be used with TVRenamr, a python script by George Hickman
 #  You can find the script at http://tvrenamr.info/
 
