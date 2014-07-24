@@ -102,7 +102,7 @@ do
 			destinationBaseDir=$(dirname "${destinationDir}/")
 			echo $destinationBaseDir
 			destinationNbDirBaseDir=$(find "${destinationBaseDir}" -type d -maxdepth 1 | wc -l)
-			if test "$destinationNbDirBaseDir" -gt 1				
+			if test "$destinationNbDirBaseDir" -gt 2 # Me and my child				
 			then
 				echo "Mise à jour de l'index : TVShow deja dans l'index, nouvelle saison uniquement"
 			else
