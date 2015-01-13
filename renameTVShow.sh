@@ -19,9 +19,6 @@
 #  Must be used with TVRenamr, a python script by George Hickman
 #  You can find the script at http://tvrenamr.info/
 
-# dlPath="/volume1/Famille/telechargements/kevin/"
-# configPath="/volume1/Famille/telechargements/config.yml"
-
 # TODO 1 : Gérer la présence d'autres vidéos dans un répertoire en cas de multi-episode ?
 # TODO 2 : Ajouter les mkv ?
 # TODO 3 : Ajouter un numero de version et licence
@@ -129,9 +126,7 @@ fi
 
 #renommer les fichiers en enlevant le début du nom du fichier qui serait en "[toto] nom du fichier"
 
-#testpath="/volume1/Famille/telechargements/kevin/Marvels.Agents.Of.S.H.I.E.L.D.S01E22.FiNAL.FASTSUB.VOSTFR.HDTV.XviD-PROTEiGON.avi"
 find ${dlPath} -type f -name "*.avi" -o -name "*.mp4" | while read filepath
-#echo $testpath | while read filepath
 do
     echo
     echo
@@ -164,7 +159,6 @@ done
 
 # Lancer l'indexation des séries et les déplacer dans leur répertoire
 find ${dlPath} -type f -name "*.avi" -o -name "*.mp4" | while read originalPath
-#echo $testpath | while read originalPath
 do
     echo
     echo
