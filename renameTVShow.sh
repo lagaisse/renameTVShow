@@ -29,6 +29,7 @@ version() {
 
 usage() {
     programName=$(basename "$0")
+    echo "" 1>&2
     echo "Usage    : ${programName} DLPATH CONFPATH [force [forceroot]]" 1>&2
     echo "" 1>&2
     echo "Startup:" 1>&2
@@ -59,7 +60,8 @@ forceperror() {
 
 
 forbidrootrun() {
-    if [ "$(id -u)" = "0" ]; then
+    if test "$(id -u)" = "0" 
+    then
        echo "This script shouldn't be run as root" 1>&2
        usage
     fi
@@ -70,7 +72,57 @@ paramnberror() {
     usage
 }
 
+checksynoindex() {
+    synoLoc=$(which "synoindex")
+    if test -z "$synoLoc"
+    then
+        echo "Error : synoindex command is not present. Are you sure you're running this program on a synology-branded NAS device ?" 1>&2
+        exit 1
+    fi
+}
 
+checkpython() {
+    pythonLoc=$(which "python")
+    if test -z "$pythonLoc"
+    then
+        pythonexe="/var/packages/python/target/bin/python"
+        if test ! -f "$pythonexe"
+        then
+            echo "Error : python command is not present. Are you sure you've installed python ?" 1>&2
+            echo "        Please refer to https://synocommunity.com/ to install the package from the package center" 1>&2
+            echo "        python is used by the tvrenamr program used in this script" 1>&2
+            exit 1
+        else
+            echo "Error : link for python is not present in /usr/bin" 1>&2
+            echo "        It may be because of a device update" 1>&2
+            echo "        Please run :   ln -s /var/packages/python/target/bin/python /usr/bin/python" 1>&2
+            exit 1
+        fi
+    fi
+}
+
+checktvrenamr() {
+    tvrLoc=$(which "tvr")
+    if test -z "$tvrLoc"
+    then
+        tvrexe="/var/packages/python/target/bin/tvr"
+        if test ! -f "$tvrexe"
+        then
+            echo "Error : tvr command is not present. Are you sure you've installed tvrenamr ?" 1>&2
+            echo "        Please refer to http://tvrenamr.info/ for install instructions" 1>&2
+            exit 1
+        else
+            echo "Error : link for tvr is not present in /usr/bin" 1>&2
+            echo "        It may be because of a device update" 1>&2
+            echo "        Please run   ln -s /var/packages/python/target/bin/tvr /usr/bin/tvr" 1>&2
+            exit 1
+        fi
+    fi
+}
+
+checksynoindex
+checkpython
+checktvrenamr
 
 if test $# -lt 2
 then
@@ -119,8 +171,6 @@ then
 else
     forbidrootrun
 fi
-
-
 
 #renommer les fichiers en enlevant le début du nom du fichier qui serait en "[toto] nom du fichier"
 
