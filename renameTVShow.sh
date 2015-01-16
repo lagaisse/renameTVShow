@@ -61,12 +61,13 @@ forceperror() {
 forbidrootrun() {
     if [ "$(id -u)" = "0" ]; then
        echo "This script shouldn't be run as root" 1>&2
-       exit 1
+       usage
     fi
 }
 
 paramnberror() {
     echo "Error : program needs at least 2 parameters" 1>&2
+    usage
 }
 
 
@@ -74,7 +75,6 @@ paramnberror() {
 if test $# -lt 2
 then
     paramnberror
-    usage
 fi
 dlPath="$1"
 configPath="$2"
@@ -115,11 +115,9 @@ then
     if test $4 != "true"
     then
         forbidrootrun
-        usage
     fi
 else
     forbidrootrun
-    usage
 fi
 
 
