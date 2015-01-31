@@ -128,8 +128,9 @@ if test $# -lt 2
 then
     paramnberror
 fi
-dlPath="$1"
-configPath="$2"
+dlPath=$(echo "$1"|tr -s '/')
+dlPath=$(echo "${dlPath%/}")
+configPath=$(echo "$2"|tr -s '/')
 
 if test ! -d "$dlPath"
 then
