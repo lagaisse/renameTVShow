@@ -197,10 +197,11 @@ do
    echo "Action : aucune"
   else
    echo "Action : RENOMMER ET REINDEXER"
+   synoindex -d  "$filepath"
    mv -f "$filepath" "$newfilepath"
    #-n new_filepath old_filepath
    #rename a file
-   synoindex -n "$newfilepath" "$filepath"
+   synoindex -a "$newfilepath"
 
   fi
 done
@@ -246,7 +247,9 @@ do
             then
                 echo "Mise à jour de l'index : TVShow deja dans l'index, presence d'autres episodes"
                 echo "Mise à jour de l'index : Ajout de l'episode à l'index"
-                synoindex -n "$destinationPath" "$originalPath"
+                #synoindex -n "$destinationPath" "$originalPath"
+                synoindex -d "$originalPath"
+                synoindex -a "$destinationPath"
             else
                 destinationBaseDir=$(dirname "${destinationDir}/")
                 echo $destinationBaseDir
