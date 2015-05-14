@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright 2014 Kevin Lagaisse
+# Copyright 2015 Kevin Lagaisse
 # 
 # Licensed under the Creative Commons BY-NC-SA 4.0 licence (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 #  Must be used with TVRenamr, a python script by George Hickman
 #  You can find the script at http://tvrenamr.info/
 
-# TODO 1 : Gérer la présence d'autres vidéos dans un répertoire en cas de multi-episode ?
 # TODO 2 : Ajouter les mkv ?
 # TODO 3 : Ajouter un numero de version et licence
 
@@ -120,6 +119,16 @@ checktvrenamr() {
     fi
 }
 
+findFiles() {
+    local path="$1"
+    find "${path}" -type f -name "*.avi" -o -name "*.mp4"
+}
+
+findEpisodes() {
+    local path="$1"
+    find "${path}" -type f -maxdepth 1 -name "*.avi" -o -name "*.mp4"
+}
+
 checksynoindex
 checkpython
 checktvrenamr
@@ -175,7 +184,7 @@ fi
 
 #renommer les fichiers en enlevant le début du nom du fichier qui serait en "[toto] nom du fichier"
 
-find ${dlPath} -type f -name "*.avi" -o -name "*.mp4" | while read filepath
+findFiles "${dlPath}" | while read filepath
 do
     echo
     echo
@@ -208,7 +217,7 @@ done
 
 
 # Lancer l'indexation des séries et les déplacer dans leur répertoire
-find ${dlPath} -type f -name "*.avi" -o -name "*.mp4" | while read originalPath
+findFiles "${dlPath}" | while read originalPath
 do
     echo
     echo
@@ -242,7 +251,7 @@ do
             #Si le répertoire est nouvellement créé (nb fichiers = 1) alors ajouter le répertoire à l'index
             ##Si le répertoire du TVShow n'est pas dans l'index, alors l'ajouter
             #Sinon signaler a l'index le déplacement du fichier
-            destinationNbFiles=$(find "${destinationDir}" -type f -maxdepth 1 -name "*.avi" -o -name "*.mp4" | wc -l)
+            destinationNbFiles=$(findEpisodes "${destinationDir}" | wc -l)
             if test "$destinationNbFiles" -gt 1
             then
                 echo "Mise à jour de l'index : TVShow deja dans l'index, presence d'autres episodes"
@@ -269,13 +278,18 @@ do
             #Suppression des répertoires dans lesquels se trouvaient les fichiers 
             # Verifier que le repertoire d'origine n'est pas egal au répertoire racine de l'éxecution du script
             #  si ce n'est pas le repertoire racine
-            #   supprimer le repertoire avec tout ce qui se trouve dedans meme si presence d'autres videos 
-            #   (TODO 1 : gérer la présence d'autres vidéos ici => multi episode ??)
+            #   supprimer le repertoire avec tout ce qui se trouve dedans sauf si presence d'autres videos 
             #  si c'est le répertoire racine alors ne supprimer que le fichier de log
             if test "$originalDir" != "$dlPath"
             then
-                echo "Suppression du repertoire original et de son contenu : $originalDir"
-                rm -Rf "$originalDir"
+                originalNbFiles=$(findFiles "${originalDir}" | wc -l)
+                if test "$originalNbFiles" -lt 1
+                then
+                    echo "Suppression du repertoire original et de son contenu : $originalDir"
+                    rm -Rf "$originalDir"
+                else
+                    echo "Pas de suppression du répertoire : présence de videos dans $originalDir"
+                fi
             else
                 echo "Suppression du fichier log uniquement : $logPath"
                 rm -f "$logPath"
