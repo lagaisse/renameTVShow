@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright 2015 Kevin Lagaisse
+# Copyright 2016 Kevin Lagaisse
 # 
 # Licensed under the Creative Commons BY-NC-SA 4.0 licence (the "License");
 # you may not use this file except in compliance with the License.
@@ -287,6 +287,7 @@ do
                 then
                     echo "Suppression du repertoire original et de son contenu : $originalDir"
                     rm -Rf "$originalDir"
+                    synoindex -D "$originalDir"
                 else
                     echo "Pas de suppression du répertoire : présence de videos dans $originalDir"
                 fi
