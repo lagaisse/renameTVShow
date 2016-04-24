@@ -72,20 +72,27 @@ paramnberror() {
 }
 
 checksynoindex() {
-    synoLoc=$(which "synoindex")
-    if test -z "$synoLoc"
+    synoExe=$(which "synoindex")
+    if test -z "$synoExe"
     then
-        echo "Error : synoindex command is not present. Are you sure you're running this program on a synology-branded NAS device ?" 1>&2
-        exit 1
+        synoExe="/usr/syno/bin/synoindex"
+        if test ! -f "$synoExe"
+        then
+            echo "Error : synoindex command is not present. Are you sure you're running this program on a synology-branded NAS device ?" 1>&2
+            exit 1
+        else
+            echo "Warning : running synoindex from DSM 6.0" 1>&2
+        fi
+ 
     fi
 }
 
 checkpython() {
-    pythonLoc=$(which "python")
-    if test -z "$pythonLoc"
+    pythonExe=$(which "python")
+    if test -z "$pythonExe"
     then
-        pythonexe="/var/packages/python/target/bin/python"
-        if test ! -f "$pythonexe"
+        pythonExe="/var/packages/python/target/bin/python"
+        if test ! -f "$pythonExe"
         then
             echo "Error : python command is not present. Are you sure you've installed python ?" 1>&2
             echo "        Please refer to https://synocommunity.com/ to install the package from the package center" 1>&2
@@ -101,11 +108,11 @@ checkpython() {
 }
 
 checktvrenamr() {
-    tvrLoc=$(which "tvr")
-    if test -z "$tvrLoc"
+    tvrExe=$(which "tvr")
+    if test -z "$tvrExe"
     then
-        tvrexe="/var/packages/python/target/bin/tvr"
-        if test ! -f "$tvrexe"
+        tvrExe="/var/packages/python/target/bin/tvr"
+        if test ! -f "$tvrExe"
         then
             echo "Error : tvr command is not present. Are you sure you've installed tvrenamr ?" 1>&2
             echo "        Please refer to http://tvrenamr.info/ for install instructions" 1>&2
@@ -206,11 +213,11 @@ do
    echo "Action : aucune"
   else
    echo "Action : RENOMMER ET REINDEXER"
-   synoindex -d  "$filepath"
+   $synoExe -d  "$filepath"
    mv -f "$filepath" "$newfilepath"
    #-n new_filepath old_filepath
    #rename a file
-   synoindex -a "$newfilepath"
+   $synoExe -a "$newfilepath"
 
   fi
 done
@@ -256,9 +263,9 @@ do
             then
                 echo "Mise à jour de l'index : TVShow deja dans l'index, presence d'autres episodes"
                 echo "Mise à jour de l'index : Ajout de l'episode à l'index"
-                #synoindex -n "$destinationPath" "$originalPath"
-                synoindex -d "$originalPath"
-                synoindex -a "$destinationPath"
+                #$synoExe -n "$destinationPath" "$originalPath"
+                $synoExe -d "$originalPath"
+                $synoExe -a "$destinationPath"
             else
                 destinationBaseDir=$(dirname "${destinationDir}/")
                 echo $destinationBaseDir
@@ -268,11 +275,11 @@ do
                     echo "Mise à jour de l'index : TVShow deja dans l'index, nouvelle saison uniquement"
                 else
                     echo "Mise à jour de l'index : Ajout du TVShow dans l'index"
-                    synoindex -A "$destinationBaseDir"        
+                    $synoExe -A "$destinationBaseDir"        
                 fi
                 echo "Mise à jour de l'index : Ajout de la saison à l'index"
-                synoindex -A "$destinationDir"
-                synoindex -d "$originalPath"
+                $synoExe -A "$destinationDir"
+                $synoExe -d "$originalPath"
             fi
             
             #Suppression des répertoires dans lesquels se trouvaient les fichiers 
@@ -287,7 +294,7 @@ do
                 then
                     echo "Suppression du repertoire original et de son contenu : $originalDir"
                     rm -Rf "$originalDir"
-                    synoindex -D "$originalDir"
+                    $synoExe -D "$originalDir"
                 else
                     echo "Pas de suppression du répertoire : présence de videos dans $originalDir"
                 fi
